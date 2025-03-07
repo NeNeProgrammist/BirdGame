@@ -3,6 +3,8 @@ import sys
 import random
 import json
 
+totalmyscores = 73737
+
 screen_x = 1550
 screen_y = 800
 
