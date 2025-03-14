@@ -90,8 +90,16 @@ class Botton():
                     print("ыыыы рестарт")
                     obstacle1.rect.x = 1800
                     obstacle1.rect.y = 700
-                    
-
+                    obstacle2.rect.x = 2200
+                    obstacle2.rect.y = 700
+                    obstacle3.rect.x = 1800
+                    obstacle3.rect.y = 0
+                    obstacle4.rect.x = 2200
+                    obstacle4.rect.y = 0
+                    obstacle5.rect.x = 2000
+                    obstacle5.rect.y = 0
+                    obstacle6.rect.x = 2000
+                    obstacle6.rect.y = 600
                     player_scores["Gamers"]["Grisha"].append(scores)
                     with open("scores.json", "w", encoding="utf-8") as file:
                         json.dump(player_scores, file)
