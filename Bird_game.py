@@ -42,8 +42,6 @@ class Bird(Parent_class):
             while i > 0:
                 self.rect.y -= 10
                 i -= 7
-        
-
         self.rect.y += 3
 
 bird1 = Bird("bird1.1.png", 20, 20, 710, 400, 6)
@@ -59,17 +57,7 @@ class Obstacle(Parent_class):
         if self.rect.x == -200:
             self.rect.x = 1750
 
-    def respawn(self):
-        if play == False:
-            obstacle1.kill()
-            obstacle2.kill()
-            obstacle3.kill()
-            obstacle4.kill()
-            obstacle5.kill()
-            obstacle6.kill()
-
-
-            
+     
     def reset(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
@@ -93,19 +81,17 @@ class Botton():
 
     def click(self):
         global play
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                x, y = event.pos
+        for evt in pygame.event.get():
+            if evt.type == pygame.MOUSEBUTTONDOWN:
+                x, y = evt.pos
                 if self.collidepoint(x, y):
                     bird1.rect.x = 710
-                    print("ыыыы рестарт")
                     bird1.rect.y = 400
-                    #obstacles.empty()
-                    #obstacles2.empty()
-                    #obstacle3.kill()
-                    #obstacle4.kill()
-                    #obstacle5.kill()
-                    #obstacle6.kill()
+                    print("ыыыы рестарт")
+                    obstacle1.rect.x = 1800
+                    obstacle1.rect.y = 700
+                    
+
                     player_scores["Gamers"]["Grisha"].append(scores)
                     with open("scores.json", "w", encoding="utf-8") as file:
                         json.dump(player_scores, file)
@@ -165,43 +151,35 @@ user = 0
 game = True
 
 while game:
+    
     if play:
-
         scores_player = scores
 
         screen.blit(backgraund, (0, 0))
 
         obstacle1.reset()
         obstacle1.update()
-        obstacle1.respawn()
-
-
+        
         obstacle2.reset()
         obstacle2.update()
-        obstacle2.respawn()
-
+       
         obstacle3.reset()
         obstacle3.update()
-        obstacle3.respawn()
-
+        
         obstacle4.reset()
         obstacle4.update()
-        obstacle4.respawn()
-
+       
         obstacle5.reset()
         obstacle5.update()
-        obstacle5.respawn()
 
         obstacle6.reset()
         obstacle6.update()
-        obstacle6.respawn()
 
         bird1.reset()
         bird1.update()
 
 
         screen.blit(text1, (50, 50))
-
 
         if bird1.rect.y >= 750:
             play = False
@@ -226,16 +204,12 @@ while game:
         botton1.click()
         screen.blit(text2, (725, 400))
         screen.blit(text3, (605, 450))
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
 
-
-    pygame.display.update()
-    clock.tick(60) 
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+    pygame.display.update()
+    clock.tick(60) 
