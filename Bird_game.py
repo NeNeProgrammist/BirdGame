@@ -3,8 +3,6 @@ import sys
 import random
 import json
 
-totalmyscores = 73737
-
 screen_x = 1550
 screen_y = 800
 
@@ -27,6 +25,8 @@ class Parent_class(pygame.sprite.Sprite):
     def reset(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
+jamp_sound = pygame.mixer.Sound("jampsound.wav")
+
 class Bird(Parent_class):
     def __init__(self, pikt, size_x, size_y, pos_x, pos_y, speed):
         super().__init__(pikt, size_x, size_y, pos_x, pos_y)
@@ -36,12 +36,16 @@ class Bird(Parent_class):
         self.rect.y += self.speed
         keys_pressed = pygame.key.get_pressed()
         if keys_pressed[pygame.K_SPACE]:
+            jamp_sound.set_volume(0.1)
+            jamp_sound.play()
             i = 15
             if self.rect.y < 25:
                 self.rect.y = 25
             while i > 0:
                 self.rect.y -= 10
                 i -= 7
+        
+
         self.rect.y += 3
 
 bird1 = Bird("bird1.1.png", 20, 20, 710, 400, 6)
@@ -57,7 +61,17 @@ class Obstacle(Parent_class):
         if self.rect.x == -200:
             self.rect.x = 1750
 
-     
+    def respawn(self):
+        if play == False:
+            obstacle1.kill()
+            obstacle2.kill()
+            obstacle3.kill()
+            obstacle4.kill()
+            obstacle5.kill()
+            obstacle6.kill()
+
+
+            
     def reset(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
@@ -81,25 +95,20 @@ class Botton():
 
     def click(self):
         global play
-        for evt in pygame.event.get():
-            if evt.type == pygame.MOUSEBUTTONDOWN:
-                x, y = evt.pos
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = event.pos
                 if self.collidepoint(x, y):
+                    pygame.mixer.music.rewind
                     bird1.rect.x = 710
-                    bird1.rect.y = 400
                     print("ыыыы рестарт")
-                    obstacle1.rect.x = 1800
-                    obstacle1.rect.y = 700
-                    obstacle2.rect.x = 2200
-                    obstacle2.rect.y = 700
-                    obstacle3.rect.x = 1800
-                    obstacle3.rect.y = 0
-                    obstacle4.rect.x = 2200
-                    obstacle4.rect.y = 0
-                    obstacle5.rect.x = 2000
-                    obstacle5.rect.y = 0
-                    obstacle6.rect.x = 2000
-                    obstacle6.rect.y = 600
+                    bird1.rect.y = 400
+                    #obstacles.empty()
+                    #obstacles2.empty()
+                    #obstacle3.kill()
+                    #obstacle4.kill()
+                    #obstacle5.kill()
+                    #obstacle6.kill()
                     player_scores["Gamers"]["Grisha"].append(scores)
                     with open("scores.json", "w", encoding="utf-8") as file:
                         json.dump(player_scores, file)
@@ -145,10 +154,14 @@ obstacles3.add(obstacle6)
 
 play = True
 
-'''pygame.mixer.init()
-pygame.mixer.music.load('music.mp3')
+pygame.mixer.init()
+pygame.mixer.music.load('music1.wav')
+pygame.mixer.music.set_volume(0.7)
 pygame.mixer.music.play()
-pygame.mixer.music.set_volume(0.1)'''
+
+lose_sound = pygame.mixer.Sound("losesound.wav")
+lose_sound.set_volume(0.5)
+
 
 
 with open("scores.json", encoding='UTF-8') as file:
@@ -159,29 +172,36 @@ user = 0
 game = True
 
 while game:
-    
     if play:
+
         scores_player = scores
 
         screen.blit(backgraund, (0, 0))
 
         obstacle1.reset()
         obstacle1.update()
-        
+        obstacle1.respawn()
+
+
         obstacle2.reset()
         obstacle2.update()
-       
+        obstacle2.respawn()
+
         obstacle3.reset()
         obstacle3.update()
-        
+        obstacle3.respawn()
+
         obstacle4.reset()
         obstacle4.update()
-       
+        obstacle4.respawn()
+
         obstacle5.reset()
         obstacle5.update()
+        obstacle5.respawn()
 
         obstacle6.reset()
         obstacle6.update()
+        obstacle6.respawn()
 
         bird1.reset()
         bird1.update()
@@ -189,8 +209,10 @@ while game:
 
         screen.blit(text1, (50, 50))
 
+
         if bird1.rect.y >= 750:
             play = False
+            lose_sound.play()
             player_scores["Gamers"]["Grisha"].append(scores)
             with open("scores.json", "w", encoding="utf-8") as file:
                 json.dump(player_scores, file)
@@ -198,6 +220,7 @@ while game:
 
         if pygame.sprite.spritecollide(bird1, obstacles3, False, pygame.sprite.collide_mask):
             play = False
+            lose_sound.play()
             player_scores["Gamers"]["Grisha"].append(scores)
             with open("scores.json", "w", encoding="utf-8") as file:
                 json.dump(player_scores, file)
@@ -206,18 +229,26 @@ while game:
             scores += 1
             text1 = f1.render("Grishas's Scores:" + str(scores), True, (0, 200, 0))
         screen.blit(text1, (50, 50))
+        
+        
 
     if play == False:
         botton1.reset()
         botton1.click()
+        pygame.mixer.music.stop()
+        #lose_sound.play(loops=1)
         screen.blit(text2, (725, 400))
         screen.blit(text3, (605, 450))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
+
+    pygame.display.update()
+    clock.tick(60) 
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-
-    pygame.display.update()
-    clock.tick(60) 
