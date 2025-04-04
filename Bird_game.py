@@ -129,6 +129,9 @@ text2 = f2.render("restart", True, (0, 0, 0))
 f3 = pygame.font.SysFont('Caladea', 36)
 text3 = f3.render("Press space to restart", True, (20, 55, 5))
 
+f4 = pygame.font.SysFont('Caladea', 36)
+text4 = f4.render("You are win!!!", True, (20, 55, 5))
+
 obstacles = pygame.sprite.Group()
 obstacles2 = pygame.sprite.Group()
 obstacles3 = pygame.sprite.Group()
@@ -162,7 +165,7 @@ pygame.mixer.music.play()
 lose_sound = pygame.mixer.Sound("losesound.wav")
 lose_sound.set_volume(0.5)
 
-
+win_sound = pygame.mixer.Sound("winsound1.wav")
 
 with open("scores.json", encoding='UTF-8') as file:
     player_scores = json.load(file)
@@ -229,8 +232,11 @@ while game:
             scores += 1
             text1 = f1.render("Grishas's Scores:" + str(scores), True, (0, 200, 0))
         screen.blit(text1, (50, 50))
-        
-        
+
+        if scores == 50:
+            play = False
+            screen.blit(text4, (675, 340))
+            win_sound.play()
 
     if play == False:
         botton1.reset()
