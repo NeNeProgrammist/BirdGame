@@ -9,6 +9,10 @@ screen_y = 800
 
 pygame.init()
 
+with open("scores.json", encoding='UTF-8') as file:
+    player_scores = json.load(file)
+
+
 screen = pygame.display.set_mode((screen_x, screen_y))
 backgraund = pygame.transform.scale(pygame.image.load("fon3.png"), (screen_x, screen_y))
 
@@ -108,7 +112,17 @@ class Botton():
                         json.dump(player_scores, file)
                     play = True
 
+player_scores_keys = list(player_scores["Gamers"].keys())
 
+current_player_scores = player_scores["Gamers"][player_scores_keys[0]]
+
+current_player = player_scores_keys[0]
+
+best_scores = max(current_player_scores)
+
+current_player_scores2 = player_scores["Gamers"][player_scores_keys[1]]
+
+best_scores2 = max(current_player_scores2)
 
 botton1 = Botton("restart.png", 120, 60, 717, 395, 200, "Calibri")
 
@@ -129,6 +143,12 @@ text4 = f4.render("You are win!!!", True, (20, 55, 5))
 
 f5 = pygame.font.SysFont('Caladea', 36)
 text5 = f5.render(f"Time left:{count_down}", True, (40, 100, 20))
+
+f6 = pygame.font.SysFont('Caladea', 36)
+text6 = f6.render(f"{current_player}scores:{best_scores}", True, (40, 100, 20))
+
+f7 = pygame.font.SysFont('Caladea', 36)
+text7 = f7.render(f"{current_player}scores:{best_scores2}", True, (40, 100, 20))
 
 obstacles = pygame.sprite.Group()
 obstacles2 = pygame.sprite.Group()
@@ -165,14 +185,13 @@ lose_sound.set_volume(0.5)
 
 win_sound = pygame.mixer.Sound("winsound1.wav")
 
-with open("scores.json", encoding='UTF-8') as file:
-    player_scores = json.load(file)
 
 user = 0
 
 game = True
 
 start_time = tm()
+
 
 
 while game:
@@ -211,8 +230,9 @@ while game:
         bird1.reset()
         bird1.update()
 
-
         screen.blit(text1, (50, 50))
+        screen.blit(text6, (1190, 20))
+        screen.blit(text7, (1190, 60))
 
         if int(game_time - start_time) == 1:
             count_down += int(start_time - game_time + 3)
