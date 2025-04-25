@@ -2,6 +2,7 @@ import pygame
 import sys
 import random
 import json
+from time import time as tm
 
 screen_x = 1550
 screen_y = 800
@@ -101,14 +102,7 @@ class Botton():
                 if self.collidepoint(x, y):
                     pygame.mixer.music.rewind
                     bird1.rect.x = 710
-                    print("ыыыы рестарт")
-                    bird1.rect.y = 400
-                    #obstacles.empty()
-                    #obstacles2.empty()
-                    #obstacle3.kill()
-                    #obstacle4.kill()
-                    #obstacle5.kill()
-                    #obstacle6.kill()
+                    bird1.rect.y = 450
                     player_scores["Gamers"]["Grisha"].append(scores)
                     with open("scores.json", "w", encoding="utf-8") as file:
                         json.dump(player_scores, file)
@@ -118,6 +112,7 @@ class Botton():
 
 botton1 = Botton("restart.png", 120, 60, 717, 395, 200, "Calibri")
 
+count_down = 0
 
 scores = 0
 f1 = pygame.font.SysFont('Caladea', 36)
@@ -131,6 +126,9 @@ text3 = f3.render("Press space to restart", True, (20, 55, 5))
 
 f4 = pygame.font.SysFont('Caladea', 36)
 text4 = f4.render("You are win!!!", True, (20, 55, 5))
+
+f5 = pygame.font.SysFont('Caladea', 36)
+text5 = f5.render(f"Time left:{count_down}", True, (40, 100, 20))
 
 obstacles = pygame.sprite.Group()
 obstacles2 = pygame.sprite.Group()
@@ -174,8 +172,12 @@ user = 0
 
 game = True
 
+start_time = tm()
+
+
 while game:
     if play:
+        game_time = tm()
 
         scores_player = scores
 
@@ -212,6 +214,12 @@ while game:
 
         screen.blit(text1, (50, 50))
 
+        if int(game_time - start_time) == 1:
+            count_down += int(start_time - game_time + 3)
+            text5 = f5.render(f"Time left:{count_down}", True, (40, 100, 20))
+            start_time = tm()
+
+        screen.blit(text5 , (50, 90))
 
         if bird1.rect.y >= 750:
             play = False
@@ -242,7 +250,6 @@ while game:
         botton1.reset()
         botton1.click()
         pygame.mixer.music.stop()
-        #lose_sound.play(loops=1)
         screen.blit(text2, (725, 400))
         screen.blit(text3, (605, 450))
         for event in pygame.event.get():
@@ -251,10 +258,10 @@ while game:
                 sys.exit()
 
 
-    pygame.display.update()
-    clock.tick(60) 
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+    pygame.display.update()
+    clock.tick(60)
