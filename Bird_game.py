@@ -112,6 +112,10 @@ class Botton():
                         json.dump(player_scores, file)
                     play = True
 
+botton1 = Botton("restart.png", 120, 60, 717, 395, 200, "Calibri")
+
+count_down = 0
+
 player_scores_keys = list(player_scores["Gamers"].keys())
 
 current_player_scores = player_scores["Gamers"][player_scores_keys[0]]
@@ -120,13 +124,19 @@ current_player = player_scores_keys[0]
 
 best_scores = max(current_player_scores)
 
+
 current_player_scores2 = player_scores["Gamers"][player_scores_keys[1]]
+
+current_player2 = player_scores_keys[1]
 
 best_scores2 = max(current_player_scores2)
 
-botton1 = Botton("restart.png", 120, 60, 717, 395, 200, "Calibri")
 
-count_down = 0
+current_player_scores3 = player_scores["Gamers"][player_scores_keys[2]]
+
+current_player3 = player_scores_keys[2]
+
+best_scores3 = max(current_player_scores3)
 
 scores = 0
 f1 = pygame.font.SysFont('Caladea', 36)
@@ -145,10 +155,13 @@ f5 = pygame.font.SysFont('Caladea', 36)
 text5 = f5.render(f"Time left:{count_down}", True, (40, 100, 20))
 
 f6 = pygame.font.SysFont('Caladea', 36)
-text6 = f6.render(f"{current_player}scores:{best_scores}", True, (40, 100, 20))
+text6 = f6.render(f"{current_player} scores:{best_scores}", True, (40, 100, 20))
 
 f7 = pygame.font.SysFont('Caladea', 36)
-text7 = f7.render(f"{current_player}scores:{best_scores2}", True, (40, 100, 20))
+text7 = f7.render(f"{current_player2} scores:{best_scores2}", True, (40, 100, 20))
+
+f8 = pygame.font.SysFont('Caladea', 36)
+text8 = f8.render(f"{current_player3} scores:{best_scores3}", True, (40, 100, 20))
 
 obstacles = pygame.sprite.Group()
 obstacles2 = pygame.sprite.Group()
@@ -233,6 +246,7 @@ while game:
         screen.blit(text1, (50, 50))
         screen.blit(text6, (1190, 20))
         screen.blit(text7, (1190, 60))
+        screen.blit(text8, (1190, 100))
 
         if int(game_time - start_time) == 1:
             count_down += int(start_time - game_time + 3)
