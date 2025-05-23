@@ -48,12 +48,12 @@ class Bird(Parent_class):
         
         if self.jumping:
             if self.jump_count > 0:
-                self.rect.y -= 15
+                self.rect.y -= 20
                 self.jump_count -= 1
             else:
                 self.jumping = False
         
-        self.rect.y += 3
+        self.rect.y += 11
         
         if self.rect.y < 25:
             self.rect.y = 25
@@ -158,15 +158,15 @@ text1 = f1.render(f"Score: {scores}", True, (0, 200, 0))
 font = pygame.font.Font(None, 36)
 input_text = ""
 active = False
-input_rect = pygame.Rect(600, 300, 200, 40)
+input_rect = pygame.Rect(670, 300, 200, 40)
 color_inactive = pygame.Color('lightskyblue3')
 color_active = pygame.Color('dodgerblue2')
 color = color_inactive
 
 # Музыка
-'''pygame.mixer.music.load('music1.wav')
+pygame.mixer.music.load('music1.wav')
 pygame.mixer.music.set_volume(0.7)
-pygame.mixer.music.play(-1)'''
+pygame.mixer.music.play(-1)
 
 def show_high_scores():
     # Получаем топ-5 результатов
@@ -238,7 +238,7 @@ while game:
                     for obstacle in obstacles3:
                         obstacle.reset_position()
                     input_text = ""
-                    #pygame.mixer.music.play(-1)
+                    pygame.mixer.music.play(-1)
             
             if event.type == pygame.KEYDOWN and active:
                 if event.key == pygame.K_RETURN:
@@ -253,9 +253,10 @@ while game:
     if not play:
         screen.blit(backgraund, (0, 0))
         button1.reset()
+        pygame.mixer.music.stop()
         
         label = f1.render("Enter your name:", True, (255, 255, 255))
-        screen.blit(label, (input_rect.x, input_rect.y - 40))
+        screen.blit(label, (input_rect.x - 20, input_rect.y - 40))
         pygame.draw.rect(screen, color, input_rect, 2)
         text_surface = font.render(input_text, True, (255, 255, 255))
         screen.blit(text_surface, (input_rect.x + 5, input_rect.y + 5))
