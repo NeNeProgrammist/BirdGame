@@ -43,7 +43,7 @@ class AnimatedBird(Parent_class):
         self.jumping = False
         self.jump_count = 0
         self.current_frame = 0
-        self.animation_speed = 0.1
+        self.animation_speed = 0.05
         self.frame_counter = 0
         self.is_animating = False
         self.image = self.idle_frame
@@ -61,7 +61,7 @@ class AnimatedBird(Parent_class):
         
         if self.jumping:
             if self.jump_count > 0:
-                self.rect.y -= 20
+                self.rect.y -= 15
                 self.jump_count -= 1
                 
                 # Анимация только во время прыжка
@@ -77,7 +77,7 @@ class AnimatedBird(Parent_class):
                 self.is_animating = False
                 self.image = self.idle_frame
         
-        self.rect.y += 11
+        self.rect.y += 7
         
         if self.rect.y < 25:
             self.rect.y = 25
@@ -93,7 +93,7 @@ class AnimatedBird(Parent_class):
 # Создаем птицу с анимацией (idle - статичное состояние, fly_frames - кадры анимации при прыжке)
 bird1 = AnimatedBird(
     idle_frame="bird1.1.png", 
-    fly_frames=["bird1.2.png", "bird1.3.png", "bird1.4.png"],  # Добавь свои файлы анимации
+    fly_frames=["bird2.png", "bird3.png"],  # Добавь свои файлы анимации
     size_x=60, 
     size_y=60, 
     pos_x=710, 
