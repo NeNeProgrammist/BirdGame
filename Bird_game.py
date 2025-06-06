@@ -29,20 +29,33 @@ jamp_sound = pygame.mixer.Sound("jampsound.wav")
 lose_sound = pygame.mixer.Sound("losesound.wav")
 lose_sound.set_volume(0.5)
 
-class Bird(Parent_class):
-    def __init__(self, pikt, size_x, size_y, pos_x, pos_y, speed):
-        super().__init__(pikt, size_x, size_y, pos_x, pos_y)
+class AnimatedBird(Parent_class):
+    def __init__(self, idle_frame, fly_frames, size_x, size_y, pos_x, pos_y, speed):
+        # Загружаем кадры анимации
+        self.idle_frame = pygame.transform.scale(pygame.image.load(idle_frame).convert_alpha(), (size_x, size_y))
+        self.fly_frames = [pygame.transform.scale(pygame.image.load(frame).convert_alpha(), (size_x, size_y)) for frame in fly_frames]
+        
+        # Инициализируем родительский класс с первым кадром
+        super().__init__(idle_frame, size_x, size_y, pos_x, pos_y)
+        
         self.speed = speed
         self.original_y = pos_y
         self.jumping = False
         self.jump_count = 0
-
+        self.current_frame = 0
+        self.animation_speed = 0.1
+        self.frame_counter = 0
+        self.is_animating = False
+        self.image = self.idle_frame
+        
     def update(self):
         keys_pressed = pygame.key.get_pressed()
         
         if keys_pressed[pygame.K_SPACE] and not self.jumping:
             self.jumping = True
             self.jump_count = 15
+            self.is_animating = True
+            self.current_frame = 0
             jamp_sound.set_volume(0.1)
             jamp_sound.play()
         
@@ -50,8 +63,19 @@ class Bird(Parent_class):
             if self.jump_count > 0:
                 self.rect.y -= 20
                 self.jump_count -= 1
+                
+                # Анимация только во время прыжка
+                if self.is_animating:
+                    self.frame_counter += 1
+                    if self.frame_counter >= self.animation_speed * 60:  # 60 FPS
+                        self.frame_counter = 0
+                        self.current_frame = (self.current_frame + 1) % len(self.fly_frames)
+                        self.image = self.fly_frames[self.current_frame]
+                        self.mask = pygame.mask.from_surface(self.image)
             else:
                 self.jumping = False
+                self.is_animating = False
+                self.image = self.idle_frame
         
         self.rect.y += 11
         
@@ -62,8 +86,20 @@ class Bird(Parent_class):
         self.rect.y = self.original_y
         self.jumping = False
         self.jump_count = 0
+        self.current_frame = 0
+        self.is_animating = False
+        self.image = self.idle_frame
 
-bird1 = Bird("bird1.1.png", 20, 20, 710, 400, 6)
+# Создаем птицу с анимацией (idle - статичное состояние, fly_frames - кадры анимации при прыжке)
+bird1 = AnimatedBird(
+    idle_frame="bird1.1.png", 
+    fly_frames=["bird1.2.png", "bird1.3.png", "bird1.4.png"],  # Добавь свои файлы анимации
+    size_x=60, 
+    size_y=60, 
+    pos_x=710, 
+    pos_y=400, 
+    speed=6
+)
 
 class Obstacle(Parent_class):
     def __init__(self, pict, size_x, size_y, pos_x, pos_y, speed):
@@ -71,24 +107,25 @@ class Obstacle(Parent_class):
         self.speed_obstacle = speed
         self.original_x = pos_x
         self.original_y = pos_y
+        self.pict = pict
 
     def update(self):
         self.rect.x -= self.speed_obstacle
         if self.rect.x < -200:
             self.rect.x = 1750
-            if "obstacle1.png" in self.image:
+            if "obstacle1.png" in self.pict:
                 self.rect.height = random.randint(100, 400)
-            elif "obstacle2.png" in self.image:
+            elif "obstacle2.png" in self.pict:
                 self.rect.height = random.randint(100, 300)
-            elif "obstacle3.png" in self.image:
+            elif "obstacle3.png" in self.pict:
                 self.rect.height = random.randint(200, 500)
-            elif "obstacle4.png" in self.image:
+            elif "obstacle4.png" in self.pict:
                 self.rect.height = random.randint(400, 450)
-            elif "obstacle5.png" in self.image:
+            elif "obstacle5.png" in self.pict:
                 self.rect.height = random.randint(400, 450)
-            elif "obstacle6.png" in self.image:
+            elif "obstacle6.png" in self.pict:
                 self.rect.height = random.randint(300, 350)
-            self.image = pygame.transform.scale(pygame.image.load(self.image), (100, self.rect.height))
+            self.image = pygame.transform.scale(pygame.image.load(self.pict), (100, self.rect.height))
 
     def reset_position(self):
         self.rect.x = self.original_x
@@ -136,7 +173,6 @@ def init_scores():
     try:
         with open(scores_file, encoding='UTF-8') as file:
             data = json.load(file)
-            # Проверяем структуру файла
             if "players" not in data:
                 data = default_scores
                 with open(scores_file, "w", encoding="utf-8") as file:
@@ -169,15 +205,13 @@ pygame.mixer.music.set_volume(0.7)
 pygame.mixer.music.play(-1)
 
 def show_high_scores():
-    # Получаем топ-5 результатов
     high_scores = []
     for player, scores_list in player_scores["players"].items():
-        if scores_list:  # Проверяем, есть ли результаты у игрока
+        if scores_list:
             high_scores.append((player, max(scores_list)))
     
     high_scores.sort(key=lambda x: x[1], reverse=True)
     
-    # Отображаем таблицу
     title = f1.render("High Scores:", True, (255, 255, 255))
     screen.blit(title, (screen_x - 250, 50))
     
@@ -221,16 +255,13 @@ while game:
                 
                 if button1.is_clicked(event.pos) and input_text:
                     current_player = input_text
-                    # Добавляем результат
                     if current_player not in player_scores["players"]:
                         player_scores["players"][current_player] = []
                     player_scores["players"][current_player].append(scores)
                     
-                    # Сохраняем в файл
                     with open("scores.json", "w", encoding="utf-8") as file:
                         json.dump(player_scores, file)
                     
-                    # Рестарт игры
                     play = True
                     scores = 0
                     text1 = f1.render(f"Score: {scores}", True, (0, 200, 0))
