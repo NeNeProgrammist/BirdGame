@@ -74,9 +74,9 @@ class AnimatedBird(Parent_class):
 
         
         if self.jumping:
-            if self.jump_count > 0:
+            #if self.jump_count > 0:
             self.rect.y -= 20
-            self.jump_count -= 1
+            #self.jump_count -= 1
 
             print(self.jump_count)
                 
