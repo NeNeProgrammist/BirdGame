@@ -45,37 +45,42 @@ class AnimatedBird(Parent_class):
         self.current_frame = 0
         self.animation_speed = 0.05
         self.frame_counter = 0
-        self.is_animating = False
+        self.is_animating = True
         self.image = self.idle_frame
         
     def update(self):
         keys_pressed = pygame.key.get_pressed()
+
+        if self.is_animating:
+            self.frame_counter += 1
+            if self.frame_counter >= self.animation_speed * 60:  # 60 FPS
+                self.frame_counter = 0
+                self.current_frame = (self.current_frame + 1) % len(self.fly_frames)
+                self.image = self.fly_frames[self.current_frame]
+                self.mask = pygame.mask.from_surface(self.image)
         
         if keys_pressed[pygame.K_SPACE] and not self.jumping:
             self.jumping = True
             self.jump_count = 15
-            self.is_animating = True
+            self.is_animating = False
             self.current_frame = 0
             jamp_sound.set_volume(0.1)
             jamp_sound.play()
+
+        else:
+            self.jumping = False
+            self.is_animating = True
+            self.image = self.idle_frame
+
         
         if self.jumping:
             if self.jump_count > 0:
-                self.rect.y -= 15
-                self.jump_count -= 1
+            self.rect.y -= 20
+            self.jump_count -= 1
+
+            print(self.jump_count)
                 
-                # Анимация только во время прыжка
-                if self.is_animating:
-                    self.frame_counter += 1
-                    if self.frame_counter >= self.animation_speed * 60:  # 60 FPS
-                        self.frame_counter = 0
-                        self.current_frame = (self.current_frame + 1) % len(self.fly_frames)
-                        self.image = self.fly_frames[self.current_frame]
-                        self.mask = pygame.mask.from_surface(self.image)
-            else:
-                self.jumping = False
-                self.is_animating = False
-                self.image = self.idle_frame
+                # Анимация только во время прыжка                
         
         self.rect.y += 7
         
@@ -93,7 +98,7 @@ class AnimatedBird(Parent_class):
 # Создаем птицу с анимацией (idle - статичное состояние, fly_frames - кадры анимации при прыжке)
 bird1 = AnimatedBird(
     idle_frame="bird1.1.png", 
-    fly_frames=["bird2.png", "bird3.png"],  # Добавь свои файлы анимации
+    fly_frames=["bird2.png", "bird3.png", "bird1.2.png", "bird1.3.png", "bird1.4.png"],  # Добавь свои файлы анимации
     size_x=60, 
     size_y=60, 
     pos_x=710, 
